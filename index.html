@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Psikologjia - TIK Projekt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #4b44cc;
+      --secondary: #ff6584;
+      --accent: #43e97b;
+      --dark: #0f0e17;
+      --dark2: #1a1a2e;
+      --card: #16213e;
+      --text: #fffffe;
+      --text-muted: #a7a9be;
+      --gradient: linear-gradient(135deg, #6c63ff 0%, #a855f7 50%, #ec4899 100%);
+      --gradient2: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── PRELOADER ─── */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--dark2);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #preloader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-brain {
+      font-size: 4rem;
+      animation: pulse-brain 1.2s ease-in-out infinite;
+      margin-bottom: 1.5rem;
+    }
+    @keyframes pulse-brain {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px #6c63ff); }
+      50% { transform: scale(1.15); filter: drop-shadow(0 0 24px #a855f7); }
+    }
+
+    .loader-text {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .loader-bar-wrap {
+      width: 220px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .loader-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--gradient);
+      border-radius: 99px;
+      animation: load 2.2s ease forwards;
+    }
+    @keyframes load { to { width: 100%; } }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15,14,23,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(108,99,255,0.15);
+      transition: all 0.3s;
+    }
+    nav.scrolled { padding: 0.7rem 2rem; box-shadow: 0 4px 30px rgba(108,99,255,0.15); }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-logo i { font-size: 1.4rem; -webkit-text-fill-color: #6c63ff; }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--gradient);
+      border-radius: 99px;
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-links a.active { color: var(--text); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 99px;
+      transition: all 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0; right: -100%;
+      width: 75%;
+      max-width: 300px;
+      height: 100vh;
+      background: var(--dark2);
+      z-index: 999;
+      padding: 5rem 2rem 2rem;
+      transition: right 0.4s cubic-bezier(0.77, 0, 0.18, 1);
+      border-left: 1px solid rgba(108,99,255,0.2);
+    }
+    .mobile-menu.open { right: 0; }
+    .mobile-menu ul { list-style: none; }
+    .mobile-menu ul li { margin-bottom: 1.5rem; }
+    .mobile-menu ul a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transition: color 0.3s;
+    }
+    .mobile-menu ul a:hover { color: #6c63ff; }
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 998;
+    }
+    .overlay.show { display: block; }
+
+    /* ─── HERO ─── */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(108,99,255,0.3) 0%, transparent 60%),
+                  radial-gradient(ellipse 40% 40% at 80% 80%, rgba(236,72,153,0.15) 0%, transparent 60%);
+    }
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: float 8s ease-in-out infinite;
+    }
+    .hero-orb-1 { width: 500px; height: 500px; background: #6c63ff; top: -100px; right: -100px; }
+    .hero-orb-2 { width: 300px; height: 300px; background: #ec4899; bottom: -50px; left: 10%; animation-delay: -3s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .hero-left { animation: slideInLeft 0.8s ease 0.3s both; }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      color: #a78bfa;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    .hero-badge i { font-size: 0.75rem; }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title span {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      padding: 0.85rem 2rem;
+      background: var(--gradient);
+      border: none;
+      border-radius: 99px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,99,255,0.4); }
+    .btn-outline {
+      padding: 0.85rem 2rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 99px;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-outline:hover { border-color: #6c63ff; color: #6c63ff; transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: slideInRight 0.8s ease 0.5s both;
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .hero-image-wrap {
+      position: relative;
+      width: 420px;
+      height: 420px;
+    }
+    .hero-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 30px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 30px 80px rgba(108,99,255,0.3);
+    }
+    .hero-image-glow {
+      position: absolute;
+      inset: -2px;
+      background: var(--gradient);
+      border-radius: 32px;
+      z-index: 1;
+    }
+    .hero-float-card {
+      position: absolute;
+      background: rgba(22,33,62,0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: float 6s ease-in-out infinite;
+    }
+    .hero-float-card:nth-child(3) { bottom: -20px; left: -30px; animation-delay: -2s; }
+    .hero-float-card:nth-child(4) { top: -20px; right: -30px; animation-delay: -4s; }
+    .float-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .float-icon.purple { background: rgba(108,99,255,0.2); color: #6c63ff; }
+    .float-icon.green { background: rgba(67,233,123,0.2); color: #43e97b; }
+    .float-text { font-size: 0.8rem; }
+    .float-text strong { display: block; font-weight: 600; color: var(--text); }
+    .float-text span { color: var(--text-muted); font-size: 0.75rem; }
+
+    /* ─── SECTION SHARED ─── */
+    section { padding: 6rem 2rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(108,99,255,0.1);
+      border: 1px solid rgba(108,99,255,0.25);
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #a78bfa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.2rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .section-title span {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 600px;
+    }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--dark2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-image-stack {
+      position: relative;
+      height: 500px;
+    }
+    .about-img-main {
+      width: 75%;
+      height: 380px;
+      object-fit: cover;
+      border-radius: 20px;
+      position: absolute;
+      top: 0; left: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .about-img-secondary {
+      width: 55%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 20px;
+      position: absolute;
+      bottom: 0; right: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      border: 3px solid var(--dark2);
+    }
+    .about-badge-img {
+      position: absolute;
+      top: 50%; left: 60%;
+      transform: translate(-50%, -50%);
+      background: var(--gradient);
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      z-index: 3;
+      box-shadow: 0 8px 30px rgba(108,99,255,0.5);
+    }
+    .about-list {
+      list-style: none;
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .about-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .about-list-icon {
+      width: 32px; height: 32px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: rgba(108,99,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6c63ff;
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+
+    /* ─── BRANCHES ─── */
+    #branches {}
+    .branches-header { text-align: center; margin-bottom: 4rem; }
+    .branches-header .section-sub { margin: 0 auto; }
+    .branches-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .branch-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 2rem;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .branch-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gradient);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+      transform-origin: left;
+    }
+    .branch-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(108,99,255,0.3);
+      box-shadow: 0 20px 60px rgba(108,99,255,0.15);
+    }
+    .branch-card:hover::before { transform: scaleX(1); }
+    .branch-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .branch-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .branch-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ─── WHY ─── */
+    #why { background: var(--dark2); }
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .why-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .why-item {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      padding: 1.5rem;
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .why-item:hover { border-color: rgba(108,99,255,0.3); transform: translateX(6px); }
+    .why-num {
+      font-size: 2rem;
+      font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .why-text h4 { font-weight: 700; margin-bottom: 0.4rem; }
+    .why-text p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.65; }
+    .why-image {
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    }
+    .why-image img { width: 100%; height: 500px; object-fit: cover; display: block; }
+
+    /* ─── INTERVIEW ─── */
+    #interview {}
+    .interview-header { text-align: center; margin-bottom: 4rem; }
+    .interview-header .section-sub { margin: 0 auto; }
+    .qa-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .qa-item {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .qa-item.open { border-color: rgba(108,99,255,0.3); }
+    .qa-question {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      gap: 1rem;
+    }
+    .qa-question span {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .q-num {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(108,99,255,0.15);
+      color: #6c63ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .qa-arrow {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, background 0.3s;
+      flex-shrink: 0;
+    }
+    .qa-item.open .qa-arrow { transform: rotate(180deg); background: rgba(108,99,255,0.2); }
+    .qa-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .qa-answer-inner {
+      padding: 0 1.5rem 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    /* ─── FACTS ─── */
+    #facts { background: var(--dark2); }
+    .facts-header { text-align: center; margin-bottom: 4rem; }
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    .fact-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .fact-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(108,99,255,0.2); }
+    .fact-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .fact-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+    .fact-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+
+    /* ─── GALLERY ─── */
+    #gallery {}
+    .gallery-header { text-align: center; margin-bottom: 3rem; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+    .gallery-item {
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    .gallery-item:first-child { grid-row: 1 / 3; }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      min-height: 200px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s;
+    }
+    .gallery-item:first-child img { min-height: 420px; }
+    .gallery-item:hover img { transform: scale(1.06); }
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(15,14,23,0.9) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--dark2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .footer-logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    .footer-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 400px;
+      margin: 0 auto 1.5rem;
+    }
+    .footer-credit {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── CURSOR DOT ─── */
+    .cursor-dot {
+      width: 8px; height: 8px;
+      background: #6c63ff;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.1s;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(108,99,255,0.5);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9997;
+      transition: transform 0.12s ease, width 0.3s, height 0.3s;
+    }
+
+    /* ─── PROGRESS BAR ─── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--gradient);
+      z-index: 9999;
+      transition: width 0.1s;
+    }
+
+    /* ─── BACK TO TOP ─── */
+    #back-top {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      width: 44px; height: 44px;
+      background: var(--gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 500;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+    }
+    #back-top.show { opacity: 1; transform: translateY(0); }
+    #back-top:hover { transform: translateY(-4px); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .branches-grid { grid-template-columns: repeat(2, 1fr); }
+      .facts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .cursor-dot, .cursor-ring { display: none; }
+
+      .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2.5rem;
+      }
+      .hero-btns { justify-content: center; }
+      .hero-stats { justify-content: center; }
+      .hero-right { display: none; }
+
+      .about-grid { grid-template-columns: 1fr; }
+      .about-image-stack { height: 320px; margin-bottom: 2rem; }
+      .about-img-main { width: 70%; height: 280px; }
+      .about-img-secondary { width: 55%; height: 200px; }
+
+      .why-grid { grid-template-columns: 1fr; }
+      .why-image { display: none; }
+
+      .branches-grid { grid-template-columns: 1fr; }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .gallery-item:first-child { grid-row: auto; }
+      .gallery-item:first-child img { min-height: 200px; }
+
+      .facts-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      section { padding: 4rem 1.25rem; }
+      .hero-stats { gap: 1.5rem; }
+      .stat-num { font-size: 1.5rem; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .facts-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<!-- CURSOR -->
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="loader-brain">🧠</div>
+  <div class="loader-text">Duke ngarkuar...</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#home" class="nav-logo">
+    <i class="fas fa-brain"></i>
+    Psikologjia
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#home" class="active">Kryefaqja</a></li>
+    <li><a href="#about">Rreth</a></li>
+    <li><a href="#branches">Degët</a></li>
+    <li><a href="#why">Rëndësia</a></li>
+    <li><a href="#interview">Intervistë</a></li>
+    <li><a href="#gallery">Galeria</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="overlay" id="overlay"></div>
+<div class="mobile-menu" id="mobile-menu">
+  <ul>
+    <li><a href="#home"><i class="fas fa-home"></i> Kryefaqja</a></li>
+    <li><a href="#about"><i class="fas fa-info-circle"></i> Rreth</a></li>
+    <li><a href="#branches"><i class="fas fa-sitemap"></i> Degët</a></li>
+    <li><a href="#why"><i class="fas fa-star"></i> Rëndësia</a></li>
+    <li><a href="#interview"><i class="fas fa-microphone"></i> Intervistë</a></li>
+    <li><a href="#gallery"><i class="fas fa-images"></i> Galeria</a></li>
+  </ul>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge"><i class="fas fa-star"></i> Projekt TIK 2024</div>
+      <h1 class="hero-title">
+        Intervistë mbi<br/>
+        <span>Psikologjinë</span>
+      </h1>
+      <p class="hero-desc">
+        Zhytuni në botën e mendjes njerëzore. Psikologjia na ndihmon të kuptojmë sjelljen, emocionet dhe proceset mendore që formojnë jetën tonë të përditshme.
+      </p>
+      <div class="hero-btns">
+        <a href="#about" class="btn-primary"><i class="fas fa-arrow-down"></i> Zbulo Më Shumë</a>
+        <a href="#interview" class="btn-outline"><i class="fas fa-microphone"></i> Shiko Intervistën</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num" data-target="200">0</div>
+          <div class="stat-label">Vjet histori</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-target="20">0</div>
+          <div class="stat-label">Nëndisiplina</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-target="1000000">0</div>
+          <div class="stat-label">Psikologë në botë</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-image-wrap">
+        <div class="hero-image-glow"></div>
+        <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80" alt="Psikologjia" />
+        <div class="hero-float-card">
+          <div class="float-icon purple"><i class="fas fa-brain"></i></div>
+          <div class="float-text">
+            <strong>Neuroshkenca</strong>
+            <span>Mendja & Truri</span>
+          </div>
+        </div>
+        <div class="hero-float-card">
+          <div class="float-icon green"><i class="fas fa-heart"></i></div>
+          <div class="float-text">
+            <strong>Mirëqenia</strong>
+            <span>Shëndeti Mendor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-image-stack reveal">
+        <img class="about-img-main" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80" alt="Psikolog" />
+        <img class="about-img-secondary" src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&q=80" alt="Terapi" />
+        <div class="about-badge-img">🧠</div>
+      </div>
+      <div class="reveal">
+        <div class="section-tag"><i class="fas fa-info-circle"></i> Rreth Psikologjisë</div>
+        <h2 class="section-title">Çfarë është <span>Psikologjia?</span></h2>
+        <p class="section-sub">
+          Psikologjia është shkenca që studion mendjen dhe sjelljen njerëzore. Ajo eksploron si njerëzit mendojnë, ndjejnë, veprojnë dhe ndërveprojnë me njëri-tjetrin.
+        </p>
+        <ul class="about-list">
+          <li>
+            <div class="about-list-icon"><i class="fas fa-check"></i></div>
+            <span>Studion proceset mendore si kujtesa, të mësuarit dhe perceptimi</span>
+          </li>
+          <li>
+            <div class="about-list-icon"><i class="fas fa-check"></i></div>
+            <span>Hulumton sjelljen njerëzore dhe faktorët që ndikojnë në të</span>
+          </li>
+          <li>
+            <div class="about-list-icon"><i class="fas fa-check"></i></div>
+            <span>Ndihmon në trajtimin e problemeve emocionale dhe mendore</span>
+          </li>
+          <li>
+            <div class="about-list-icon"><i class="fas fa-check"></i></div>
+            <span>Aplikon metoda shkencore për të kuptuar natyrën njerëzore</span>
+          </li>
+          <li>
+            <div class="about-list-icon"><i class="fas fa-check"></i></div>
+            <span>Lidh biologjinë, sociologjinë dhe filozofinë në një disiplinë</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BRANCHES -->
+<section id="branches">
+  <div class="section-inner">
+    <div class="branches-header reveal">
+      <div class="section-tag"><i class="fas fa-sitemap"></i> Fushat</div>
+      <h2 class="section-title">Degët e <span>Psikologjisë</span></h2>
+      <p class="section-sub">Psikologjia ndahet në shumë fusha specializimi, secila me fokusin e vet të veçantë.</p>
+    </div>
+    <div class="branches-grid">
+      <div class="branch-card reveal">
+        <div class="branch-icon" style="background:rgba(108,99,255,0.15);color:#6c63ff"><i class="fas fa-brain"></i></div>
+        <h3>Psikologjia Klinike</h3>
+        <p>Diagnostikimi dhe trajtimi i çrregullimeve mendore dhe emocionale. Psikologët klinikë punojnë me pacientë të ndryshëm.</p>
+      </div>
+      <div class="branch-card reveal">
+        <div class="branch-icon" style="background:rgba(236,72,153,0.15);color:#ec4899"><i class="fas fa-users"></i></div>
+        <h3>Psikologjia Sociale</h3>
+        <p>Studion si njerëzit ndikojnë mbi njëri-tjetrin dhe si sjelljet ndryshojnë në grupe dhe situata sociale.</p>
+      </div>
+      <div class="branch-card reveal">
+        <div class="branch-icon" style="background:rgba(67,233,123,0.15);color:#43e97b"><i class="fas fa-child"></i></div>
+        <h3>Psikologjia Zhvillimore</h3>
+        <p>Eksploron ndryshimet psikologjike gjatë gjithë jetës njerëzore, nga fëmijëria deri në moshën e vjetër.</p>
+      </div>
+      <div class="branch-card reveal">
+        <div class="branch-icon" style="background:rgba(251,191,36,0.15);color:#fbbf24"><i class="fas fa-briefcase"></i></div>
+        <h3>Psikologjia Organizative</h3>
+        <p>Studion sjelljen njerëzore në mjedisin e punës dhe ndihmon organizatat të përmirësojnë performancën.</p>
+      </div>
+      <div class="branch-card reveal">
+        <div class="branch-icon" style="background:rgba(239,68,68,0.15);color:#ef4444"><i class="fas fa-running"></i></div>
+        <h3>Psikologjia Sportive</h3>
+        <p>Aplikon parimet psikologjike për të ndihmuar atletët të arrijnë performancën maksimale.</p>
+      </div>
+      <div class="branch-card reveal">
+        <div class="branch-icon" style="background:rgba(14,165,233,0.15);color:#0ea5e9"><i class="fas fa-graduation-cap"></i></div>
+        <h3>Psikologjia Edukative</h3>
+        <p>Studion si njerëzit mësojnë dhe zhvillon metoda për të përmirësuar arsimimin dhe mësimdhënien.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="section-inner">
+    <div class="why-grid">
+      <div>
+        <div class="section-tag reveal"><i class="fas fa-star"></i> Rëndësia</div>
+        <h2 class="section-title reveal">Pse është e<br/><span>Rëndësishme?</span></h2>
+        <p class="section-sub reveal">Psikologjia luan një rol vendimtar në çdo aspekt të jetës sonë — nga shëndeti mendor deri te marrëdhëniet dhe suksesi profesional.</p>
+        <div class="why-items">
+          <div class="why-item reveal">
+            <div class="why-num">01</div>
+            <div class="why-text">
+              <h4>Shëndeti Mendor</h4>
+              <p>Na ndihmon të kuptojmë dhe trajtojmë ankthin, depresionin dhe çrregullime të tjera mendore që prekin miliona njerëz.</p>
+            </div>
+          </div>
+          <div class="why-item reveal">
+            <div class="why-num">02</div>
+            <div class="why-text">
+              <h4>Marrëdhëniet Njerëzore</h4>
+              <p>Psikologjia na mëson si të komunikojmë mirë, të ndërtojmë besim dhe të zgjidhim konfliktet me empati.</p>
+            </div>
+          </div>
+          <div class="why-item reveal">
+            <div class="why-num">03</div>
+            <div class="why-text">
+              <h4>Zhvillimi Personal</h4>
+              <p>Të kuptuarit e vetes ndihmon në vendimmarrje, motivim dhe arritjen e qëllimeve personale.</p>
+            </div>
+          </div>
+          <div class="why-item reveal">
+            <div class="why-num">04</div>
+            <div class="why-text">
+              <h4>Shoqëria dhe Kultura</h4>
+              <p>Psikologjia shpjegon paragjykimet, sjelljen sociale dhe si mund të krijojmë shoqëri më të drejtë.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-image reveal">
+        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&q=80" alt="Rëndësia e Psikologjisë" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERVIEW / Q&A -->
+<section id="interview">
+  <div class="section-inner">
+    <div class="interview-header reveal">
+      <div class="section-tag"><i class="fas fa-microphone"></i> Intervistë</div>
+      <h2 class="section-title">Pyetje & <span>Përgjigje</span></h2>
+      <p class="section-sub">Pyetjet më të shpeshta rreth psikologjisë — të shtruara dhe të shpjeguara thjesht.</p>
+    </div>
+    <div class="qa-list">
+      <div class="qa-item reveal">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <span><div class="q-num">Q1</div>Çfarë studjon saktësisht psikologjia?</span>
+          <div class="qa-arrow"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">Psikologjia studjon mendjen dhe sjelljen njerëzore duke përfshirë proceset mendore si mendimi, ndjesia, perceptimi, kujtesa dhe arsyetimi. Ajo gjithashtu eksploron si këto procese ndikojnë në sjelljen dhe mirëqenien e individit.</div>
+        </div>
+      </div>
+      <div class="qa-item reveal">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <span><div class="q-num">Q2</div>Kur filloi psikologjia si shkencë?</span>
+          <div class="qa-arrow"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">Psikologjia si shkencë moderne filloi zyrtarisht në vitin 1879 kur Wilhelm Wundt hapi laboratorin e parë psikologjik në Leipzig, Gjermani. Megjithatë, pyetjet rreth mendjes njerëzore kanë qenë objekt i filozofisë greke për mijëra vjet para kësaj date.</div>
+        </div>
+      </div>
+      <div class="qa-item reveal">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <span><div class="q-num">Q3</div>Cili është dallimi midis psikologut dhe psikiatrit?</span>
+          <div class="qa-arrow"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">Psikologu ka diplomë në psikologji dhe ofron terapi dhe këshillim, por zakonisht nuk mund të përshkruajë ilaçe. Psikiatri është mjek i specializuar në shëndetin mendor dhe mund të diagnostikojë, terapizojë dhe përshkruajë barna. Të dy profesionet shpesh bashkëpunojnë për trajtimin e pacientëve.</div>
+        </div>
+      </div>
+      <div class="qa-item reveal">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <span><div class="q-num">Q4</div>Si na ndihmon psikologjia në jetën e përditshme?</span>
+          <div class="qa-arrow"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">Psikologjia na ndihmon të kuptojmë vetën dhe të tjerët, të menaxhojmë stresin dhe emocionet negative, të komunikojmë efektivisht, të marrim vendime të mira dhe të ndërtojmë marrëdhënie të shëndetshme. Njohja e koncepteve bazë psikologjike mund të transformojë cilësinë e jetës.</div>
+        </div>
+      </div>
+      <div class="qa-item reveal">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <span><div class="q-num">Q5</div>Çfarë është inteligjenca emocionale?</span>
+          <div class="qa-arrow"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">Inteligjenca emocionale (EQ) është aftësia për të njohur, kuptuar dhe menaxhuar emocionet e veta dhe të të tjerëve. Ajo përfshin vetëndërgjegjësimin, menaxhimin e emocioneve, motivimin, empatinë dhe aftësitë sociale. Studimet tregojnë se EQ është po aq i rëndësishëm sa IQ për suksesin në jetë.</div>
+        </div>
+      </div>
+      <div class="qa-item reveal">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <span><div class="q-num">Q6</div>A mund të ndihmojë psikologjia me ankthin?</span>
+          <div class="qa-arrow"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">Po, absolutisht. Terapia kognitive-comportamentale (CBT) është një nga metodat më efektive për trajtimin e ankthit. Psikologët ndihmojnë pacientët të identifikojnë mendimet negative, të ndryshojnë modelet e sjelljes dhe të zhvillojnë strategji të shëndetshme për të menaxhuar stresin dhe ankthin.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FACTS -->
+<section id="facts">
+  <div class="section-inner">
+    <div class="facts-header reveal">
+      <div class="section-tag"><i class="fas fa-chart-bar"></i> Fakte</div>
+      <h2 class="section-title">Fakte <span>Interesante</span></h2>
+    </div>
+    <div class="facts-grid">
+      <div class="fact-card reveal">
+        <div class="fact-icon">🧠</div>
+        <span class="fact-number" data-target="86">0</span>
+        <div class="fact-label">Miliardë neurone në trurin njerëzor</div>
+      </div>
+      <div class="fact-card reveal">
+        <div class="fact-icon">😊</div>
+        <span class="fact-number" data-target="7">0</span>
+        <div class="fact-label">Emocione bazë universale sipas Ekman</div>
+      </div>
+      <div class="fact-card reveal">
+        <div class="fact-icon">💤</div>
+        <span class="fact-number" data-target="90">0</span>
+        <div class="fact-label">% e ëndrrave harrohen brenda 10 minutash</div>
+      </div>
+      <div class="fact-card reveal">
+        <div class="fact-icon">⚡</div>
+        <span class="fact-number" data-target="400">0</span>
+        <div class="fact-label">km/h shpejtësia e sinjaleve nervore</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-inner">
+    <div class="gallery-header reveal">
+      <div class="section-tag"><i class="fas fa-images"></i> Galeria</div>
+      <h2 class="section-title">Galeria <span>Vizuale</span></h2>
+      <p class="section-sub" style="margin:0 auto">Imazhe që ilustrojnë botën e psikologjisë dhe shkencës së mendjes.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80" alt="Truri" />
+        <div class="gallery-overlay"><span>Neuroshkenca</span></div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&q=80" alt="Meditim" />
+        <div class="gallery-overlay"><span>Meditimi & Qetësia</span></div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=500&q=80" alt="Terapi" />
+        <div class="gallery-overlay"><span>Terapia</span></div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&q=80" alt="Studim" />
+        <div class="gallery-overlay"><span>Hulumtimi</span></div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1509909756405-be0199881695?w=500&q=80" alt="Emocionet" />
+        <div class="gallery-overlay"><span>Emocionet</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🧠 Psikologjia</div>
+  <p class="footer-text">Një projekt TIK mbi psikologjinë — shkencën e mendjes dhe sjelljes njerëzore. Faleminderit që e vizituat!</p>
+  <p class="footer-credit">© 2024 Projekt TIK &nbsp;|&nbsp; Bërë me ❤️</p>
+</footer>
+
+<!-- BACK TO TOP -->
+<div id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up" style="color:#fff"></i>
+</div>
+
+<script>
+  // ─── PRELOADER ───
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('preloader').classList.add('hidden');
+    }, 2400);
+  });
+
+  // ─── CUSTOM CURSOR ───
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    dot.style.left = mx - 4 + 'px'; dot.style.top = my - 4 + 'px';
+    rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+    ring.style.left = rx - 18 + 'px'; ring.style.top = ry - 18 + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a,button,.branch-card,.why-item,.fact-card,.gallery-item,.qa-question').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.style.width = '56px'; ring.style.height = '56px'; });
+    el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; });
+  });
+
+  // ─── NAVBAR SCROLL ───
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+    document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+    // progress bar
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    // active nav
+    const sections = ['home','about','branches','why','interview','facts','gallery'];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const link = document.querySelector(`.nav-links a[href="#${id}"]`);
+      if (link) link.classList.toggle('active', rect.top <= 100 && rect.bottom > 100);
+    });
+  });
+
+  // ─── MOBILE MENU ───
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('overlay');
+  function closeMenu() { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); overlay.classList.remove('show'); }
+  hamburger.addEventListener('click', () => {
+    const open = !hamburger.classList.contains('open');
+    hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); overlay.classList.toggle('show');
+  });
+  overlay.addEventListener('click', closeMenu);
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+  // ─── SCROLL REVEAL ───
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ─── Q&A ACCORDION ───
+  function toggleQA(btn) {
+    const item = btn.closest('.qa-item');
+    const answer = item.querySelector('.qa-answer');
+    const inner = item.querySelector('.qa-answer-inner');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.qa-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.qa-answer').style.maxHeight = '0';
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = inner.scrollHeight + 'px';
+    }
+  }
+
+  // ─── COUNTER ANIMATION ───
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target);
+    const isMillions = target >= 100000;
+    const duration = 1800;
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = p < 0.5 ? 2*p*p : -1+(4-2*p)*p;
+      const val = Math.floor(ease * target);
+      el.textContent = isMillions ? (val >= 1000000 ? '1M+' : Math.floor(val/1000)+'K') : val.toLocaleString('sq-AL');
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = isMillions ? '1M+' : target.toLocaleString('sq-AL');
+    }
+    requestAnimationFrame(step);
+  }
+  const counterObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateCounter(e.target); counterObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-target]').forEach(el => counterObs.observe(el));
+</script>
+</body>
+</html>
